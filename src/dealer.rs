@@ -744,7 +744,7 @@ impl Dealer {
         let showdown_players_seats: Vec<u8> = self.p.iter().filter(|p| !p.is_folded).map(|p| p.seat).collect::<Vec<u8>>();
         let pot = self.pot.clone();
         if showdown_players_seats.len() == 0 {
-            e// println!("ah {:?}", self.ah);
+            // println!("ah {:?}", self.ah);
             panic!("showdown No players left");
         } else if showdown_players_seats.len() == 1 {
             // only 1 player left, pay out the pot
@@ -775,7 +775,7 @@ impl Dealer {
 
             if self.pot > 0 {
                 if self.pot > self.p.len() as u16 * 4 {
-                    e// println!("ah {:?}", self.ah);
+                    // println!("ah {:?}", self.ah);
                     panic!("isnt remainder pot {:?}", self.pot);
                 }
                 // println!("has remaining pot {:?}", self.pot);
