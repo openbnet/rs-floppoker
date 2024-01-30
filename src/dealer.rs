@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::fmt;
 
+use rs_handstrength::normalize_equity;
 use rs_handstrength::{Card, equity};
 use crate::player::*;
 use crate::deck::*;
@@ -764,16 +765,16 @@ impl Dealer {
             let showdown_player_hands: Vec<[Card; 4]> = self.p.iter().filter(|p| !p.is_folded).map(|p| p.hand).collect::<Vec<[Card; 4]>>();
             // println!("showdown player hands {:?}", showdown_player_hands);
             // println!("showdown pseats {:?}", showdown_players_seats);
-            let equities = equity(&showdown_player_hands, &self.flop);
-            // println!("equities {:?}", equities);
+            let equities = normalize_equity(&equity(&showdown_player_hands, &self.flop));
+            println!("equities {:?}", equities);
             
             let sidepots = self.group_side_pots();
-            // println!("sidepots {:?}", sidepots);
+            println!("sidepots {:?}", sidepots);
             for sidepot in sidepots {
                 for (i, equity) in equities.iter().enumerate() {
                     let sidepot_total = sidepot.value * sidepot.contributors.len() as u16;
                     let chips = (*equity as f32 / 100 as f32 * sidepot_total as f32).floor() as u16;
-                    // println!("pot {:?} sidepot_total {:?} equity {:?} chips {:?}", self.pot, sidepot_total, equity, chips);
+                    println!("pot {:?} sidepot_total {:?} equity {:?} chips {:?}", self.pot, sidepot_total, equity, chips);
                     self.pay_from_pot(&showdown_players_seats[i], &chips);
                 }
             }
