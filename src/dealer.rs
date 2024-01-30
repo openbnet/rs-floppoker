@@ -254,8 +254,8 @@ impl Dealer {
     pub fn pay_from_pot(&mut self, seat: &u8, amt: &u16) {
         self.add_chips_to_player(seat, amt);
         if self.pot < *amt {
-            e// println!("Pot {:?} amt {:?}", self.pot, amt);
-            e// println!("ah {:?}", self.ah);
+            // println!("Pot {:?} amt {:?}", self.pot, amt);
+            // println!("ah {:?}", self.ah);
             panic!("Not enough chips in pot");
         }
         self.pot -= amt;
