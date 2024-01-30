@@ -9,8 +9,4 @@ license = "MIT"
 
 [dependencies]
 rand = "0.8.5"
-rayon = "1.8.1"
 rs_handstrength = { git = "ssh://git@github.com/openbnet/rs-handstrength.git", branch = "master" }
-crossbeam = "0.8.4"
-clippy = "0.0.302"
-dashmap = "5.5.3"
