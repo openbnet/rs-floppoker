@@ -1,0 +1,16 @@
+[package]
+name = "rs_floppoker"
+version = "0.1.0"
+edition = "2021"
+authors = ["Hansel Ke"]
+description = "Omaha flop poker, action ends after flop. Pot split by hand equities on flop"
+license = "MIT"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rand = "0.8.5"
+rayon = "1.8.1"
+rs_handstrength = { git = "ssh://git@github.com/openbnet/rs-handstrength.git", branch = "master" }
+crossbeam = "0.8.4"
+clippy = "0.0.302"
+dashmap = "5.5.3"
