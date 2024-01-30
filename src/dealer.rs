@@ -774,7 +774,7 @@ impl Dealer {
             }
 
             if self.pot > 0 {
-                if self.pot > self.p.len() as u16 * 3 {
+                if self.pot > self.p.len() as u16 * 4 {
                     eprintln!("ah {:?}", self.ah);
                     panic!("isnt remainder pot {:?}", self.pot);
                 }
