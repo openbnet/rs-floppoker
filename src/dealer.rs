@@ -737,14 +737,14 @@ impl Dealer {
         if self.stage != Stages::Showdown {
             panic!("Hand not over");
         }
-        println!("handle showdown done s bets {:?}", self.done_s_bets);
+        // println!("handle showdown done s bets {:?}", self.done_s_bets);
         self.refund_excess();
-        println!("after refund done s bets {:?}", self.done_s_bets);
+        // println!("after refund done s bets {:?}", self.done_s_bets);
         // println!("after refund actions {:?}", self.ah.actions);
         let showdown_players_seats: Vec<u8> = self.p.iter().filter(|p| !p.is_folded).map(|p| p.seat).collect::<Vec<u8>>();
         let pot = self.pot.clone();
         if showdown_players_seats.len() == 0 {
-            eprintln!("ah {:?}", self.ah);
+            e// println!("ah {:?}", self.ah);
             panic!("showdown No players left");
         } else if showdown_players_seats.len() == 1 {
             // only 1 player left, pay out the pot
@@ -757,25 +757,25 @@ impl Dealer {
                 panic!("Flop not dealt");
             }
             let showdown_player_hands: Vec<[Card; 4]> = self.p.iter().filter(|p| !p.is_folded).map(|p| p.hand).collect::<Vec<[Card; 4]>>();
-            println!("showdown player hands {:?}", showdown_player_hands);
-            println!("showdown pseats {:?}", showdown_players_seats);
+            // println!("showdown player hands {:?}", showdown_player_hands);
+            // println!("showdown pseats {:?}", showdown_players_seats);
             let equities = equity(&showdown_player_hands, &self.flop);
-            println!("equities {:?}", equities);
+            // println!("equities {:?}", equities);
             
             let sidepots = self.group_side_pots();
-            println!("sidepots {:?}", sidepots);
+            // println!("sidepots {:?}", sidepots);
             for sidepot in sidepots {
                 for (i, equity) in equities.iter().enumerate() {
                     let sidepot_total = sidepot.value * sidepot.contributors.len() as u16;
                     let chips = (*equity as f32 / 100 as f32 * sidepot_total as f32).floor() as u16;
-                    println!("pot {:?} sidepot_total {:?} equity {:?} chips {:?}", self.pot, sidepot_total, equity, chips);
+                    // println!("pot {:?} sidepot_total {:?} equity {:?} chips {:?}", self.pot, sidepot_total, equity, chips);
                     self.pay_from_pot(&showdown_players_seats[i], &chips);
                 }
             }
 
             if self.pot > 0 {
                 if self.pot > self.p.len() as u16 * 4 {
-                    eprintln!("ah {:?}", self.ah);
+                    e// println!("ah {:?}", self.ah);
                     panic!("isnt remainder pot {:?}", self.pot);
                 }
                 // println!("has remaining pot {:?}", self.pot);
