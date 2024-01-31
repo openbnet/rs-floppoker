@@ -1,4 +1,4 @@
-use rs_handstrength::{Card, Suit};
+use rs_handstrength::{Card, Suit, sort_cards4, sort_cards3};
 use rand::{seq::SliceRandom, SeedableRng, rngs::StdRng};
 
 #[derive(Debug, Clone)]
@@ -52,7 +52,7 @@ impl Deck {
             .map(|i| self.cards[(self.card_index + i ) as usize]);
 
         self.card_index += 4;
-        cards
+        sort_cards4(&cards)
     }
     pub fn draw3(&mut self) -> [Card; 3] {
         if self.card_index + 3 > 52 {
@@ -63,7 +63,7 @@ impl Deck {
             .map(|i| self.cards[(self.card_index + i ) as usize]);
 
         self.card_index += 3;
-        cards
+        sort_cards3(&cards)
     }
 }
 #[cfg(test)]

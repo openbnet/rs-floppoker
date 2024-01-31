@@ -175,7 +175,7 @@ dependencies = [
 [[package]]
 name = "rs_handstrength"
 version = "0.4.1"
-source = "git+ssh://git@github.com/openbnet/rs-handstrength.git?branch=master#7a80ba3c71735c3f3bfbc683933e922043d0a61d"
+source = "git+ssh://git@github.com/openbnet/rs-handstrength.git?branch=master#832a343605cfb9deacf05e395eb984c36c6eb073"
 dependencies = [
  "insta",
  "itertools",
