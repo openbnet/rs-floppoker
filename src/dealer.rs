@@ -745,7 +745,7 @@ impl Dealer {
         }
         // println!("handle showdown done s bets {:?}", self.done_s_bets);
         self.refund_excess();
-        // println!("after refund done s bets {:?}", self.done_s_bets);
+        println!("after refund done s bets {:?}", self.done_s_bets);
         // println!("after refund actions {:?}", self.ah.actions);
         let showdown_players_seats: Vec<u8> = self.p.iter().filter(|p| !p.is_folded).map(|p| p.seat).collect::<Vec<u8>>();
         let pot = self.pot.clone();
