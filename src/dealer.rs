@@ -419,10 +419,9 @@ impl Dealer {
 
             },
             ActionType::BetAI => {
-                if &action.value + call_amt > p_chips {
-                    panic!("Not enough chips");
-                }
+
                 if &action.value != &p_chips {
+                    eprintln!("action value {:?} p_chips {:?}", action.value, p_chips);
                     panic!("BetAI should bet all in");
                 }
                 // pay off outstanding bets
@@ -750,6 +749,7 @@ impl Dealer {
         // println!("after refund actions {:?}", self.ah.actions);
         let showdown_players_seats: Vec<u8> = self.p.iter().filter(|p| !p.is_folded).map(|p| p.seat).collect::<Vec<u8>>();
         let pot = self.pot.clone();
+    
         if showdown_players_seats.len() == 0 {
             // println!("ah {:?}", self.ah);
             panic!("showdown No players left");
