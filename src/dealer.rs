@@ -176,8 +176,8 @@ impl Dealer {
         self.done_s_bets = vec![];
         // update action history starting bal
         self.ah.start_bal = self.p.iter().map(|p| StartingBal {
-            seat: p.seat,
-            bal: p.chips
+            seat: p.seat.clone(),
+            bal: p.chips.clone()
         }).collect::<Vec<StartingBal>>();
 
         // first player to post small blind by p_action bet 1
