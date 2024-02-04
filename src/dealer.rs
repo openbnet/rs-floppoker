@@ -264,7 +264,8 @@ impl Dealer {
     // should take in self and an action struct
 
     pub fn p_action(&mut self, action: Action) {
-        // does not check for pot limit rules to make it run faster
+        // not all rules are checked, im lazy and it runs faster without it
+        // makes it hard to catch errors
         // @TODO should check for errors by parsing ActionHistory to see if rules are broken 
         if self.curr != action.seat {
             panic!("Not your turn");
@@ -457,11 +458,13 @@ impl Dealer {
 
             }
             ActionType::Raise => {
-                // dont error check for pot limit rules!
                 if &action.value + call_amt > p_chips {
                     // println!("raise called {:?} {:?}", call_amt, action);
                     // println!("pchips {:?} pot {:?}", p_chips, self.pot);
                     panic!("raise Not enough chips");
+                }
+                if &action.value > &(call_amt + self.pot) {
+                    panic!("raise too much");
                 }
                 // println!("raise called {:?} {:?}", call_amt, action);
                 // pay off outstanding bets
@@ -497,9 +500,11 @@ impl Dealer {
 
             },
             ActionType::RaiseAI => {
-                // dont error check for pot limit rules!
                 if &action.value + call_amt != p_chips {
                     panic!("raise incorrect chips");
+                }
+                if &action.value > &(call_amt + self.pot) {
+                    panic!("raiseAI too much");
                 }
                 // println!("raise called {:?} {:?}", call_amt, action);
                 // println!("pchips {:?} pot {:?}", p_chips, self.pot);
