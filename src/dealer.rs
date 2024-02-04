@@ -747,6 +747,8 @@ impl Dealer {
         if self.stage != Stages::Showdown {
             panic!("showdown Hand not over");
         }
+        // we need to clone ah and replace it, below mutates ah.actions which sux for re-running hands
+        let tmp_actions = self.ah.actions.clone();
         // println!("handle showdown done s bets {:?}", self.done_s_bets);
         self.refund_excess();
         // println!("after refund done s bets {:?}", self.done_s_bets);
@@ -763,7 +765,6 @@ impl Dealer {
             let winner = showdown_players_seats[0];
             // println!("only one player {:?}", winner);
             self.pay_from_pot(&winner, &pot);
-            return;
         } else {
             if self.flop[0].value == 0 {
                 panic!("Flop not dealt");
@@ -793,10 +794,9 @@ impl Dealer {
                 // println!("has remaining pot {:?}", self.pot);
                 self.pay_from_pot(&showdown_players_seats[0], &self.pot.clone());
             }
-            return;
         }
 
-
+        self.ah.actions = tmp_actions;
     }
 
     // helper function to deal 3 cards to the self.flop
