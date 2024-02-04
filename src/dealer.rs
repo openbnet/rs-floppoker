@@ -166,7 +166,7 @@ impl Dealer {
                     }
                 }
             }
-            _ => panic!("Hand not over"),
+            _ => panic!("new_hand Hand not over"),
         };
         self.curr = self.p[0].seat;
         self.stage = Stages::PreFlop;
@@ -745,7 +745,7 @@ impl Dealer {
 
     pub fn handle_showdown(&mut self) {
         if self.stage != Stages::Showdown {
-            panic!("Hand not over");
+            panic!("showdown Hand not over");
         }
         // println!("handle showdown done s bets {:?}", self.done_s_bets);
         self.refund_excess();
@@ -872,7 +872,7 @@ impl Dealer {
 
     pub fn refund_excess(&mut self) {
         if self.stage != Stages::Showdown {
-            panic!("Hand not over");
+            panic!("refund Hand not over");
         }
         // println!("refund excess done s bets {:?}", self.done_s_bets);
         // Extract necessary data from the latest bet
