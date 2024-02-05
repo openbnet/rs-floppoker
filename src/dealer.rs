@@ -43,14 +43,14 @@ pub enum ActionType {
 impl fmt::Display for ActionType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            ActionType::Fold => write!(f, "Fold"),
-            ActionType::Check => write!(f, "Check"),
-            ActionType::Call => write!(f, "Call"),
-            ActionType::CallAI => write!(f, "CallAI"),
-            ActionType::Bet => write!(f, "Bet"),
-            ActionType::BetAI => write!(f, "BetAI"),
-            ActionType::Raise => write!(f, "Raise"),
-            ActionType::RaiseAI => write!(f, "RaiseAI"),
+            ActionType::Fold => write!(f, "F"),
+            ActionType::Check => write!(f, "CK"),
+            ActionType::Call => write!(f, "C"),
+            ActionType::CallAI => write!(f, "CA"),
+            ActionType::Bet => write!(f, "B"),
+            ActionType::BetAI => write!(f, "BA"),
+            ActionType::Raise => write!(f, "R"),
+            ActionType::RaiseAI => write!(f, "RA"),
         }
     }
 }
