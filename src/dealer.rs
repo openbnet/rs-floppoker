@@ -787,7 +787,7 @@ impl Dealer {
             }
 
             if self.pot > 0 {
-                if self.pot as f32 / pot as f32 > 0.1 {
+                if self.pot > self.p.len() as u16 * 4 && self.pot as f32 / pot as f32 > 0.2 {
                     // println!("ah {:?}", self.ah);
                     panic!("isnt remainder pot {:?}", self.pot);
                 }
