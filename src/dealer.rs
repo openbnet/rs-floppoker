@@ -10,7 +10,7 @@ use crate::deck::*;
 #[derive(Debug, Clone)]
 pub struct Dealer {
     pub p: Vec<Player>,
-    deck: Deck,
+    pub deck: Deck,
     pub stage: Stages,
     pub seed: u64,
     pub button: u8,
