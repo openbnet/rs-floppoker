@@ -65,6 +65,15 @@ impl Deck {
         self.card_index += 3;
         sort_cards3(&cards)
     }
+    pub fn draw1(&mut self) -> Card {
+        if self.card_index + 1 > 52 {
+            panic!("Not enough cards in the deck");
+        }
+
+        let card = self.cards[self.card_index as usize];
+        self.card_index += 1;
+        card
+    }
 }
 #[cfg(test)]
 mod tests {
