@@ -1312,6 +1312,39 @@ mod tests {
         assert_eq!(dealer.curr, 3);
  
     }
+    #[test]
+    fn test_1folds() {
+        let mut dealer = Dealer::new(123, vec![
+            Player::new(1, 100),
+            Player::new(2, 100),
+            Player::new(3, 100),
+        ]);
+
+        dealer.new_hand();
+        dealer.p_action(Action {
+            seat: 1,
+            t: ActionType::Fold,
+            value: 0
+        });
+        assert_eq!(dealer.curr, 2);
+        dealer.p_action(Action {
+            seat: 2,
+            t: ActionType::Call,
+            value: 0
+        });
+        assert_eq!(dealer.stage, Stages::PreFlop);
+        dealer.p_action(Action {
+            seat: 3,
+            t: ActionType::Check,
+            value: 0
+        });
+        assert_eq!(dealer.stage, Stages::Flop);
+        assert_eq!(dealer.curr, 2);
+        
+
+
+    }
+
     // test this action history
     //  ActionHistory { start_bal: [StartingBal { seat: 2, bal: 100 }, StartingBal { seat: 3, bal: 100 }, StartingBal { seat: 4, bal: 100 }, StartingBal { seat: 1, bal: 100 }], 
     // actions: [Action { seat: 2, t: Bet, value: 1 }, Action { seat: 3, t: Raise, value: 1 }, 
