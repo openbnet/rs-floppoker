@@ -564,8 +564,8 @@ impl Dealer {
     pub fn update_stage(&mut self) {
         let s_bets_len = self.s_bets.len();
         let ap_count = self.p.iter().filter(|p| !p.is_folded && !p.is_all_in).count();
-        println!("update stage {:?} {:?}", self.stage, self.s_bets);
-        println!("ap count {:?}", ap_count);
+        // println!("update stage {:?} {:?}", self.stage, self.s_bets);
+        // println!("ap count {:?}", ap_count);
         if s_bets_len == 0 {
             if self.stage == Stages::PreFlop {
                 // deal 3 cards to the flop
