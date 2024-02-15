@@ -637,11 +637,9 @@ impl Dealer {
         let curr_seat = self.curr;
         let num_p = self.p.len() as u8;
         let mut next = curr_seat % num_p + 1;
-        println!("getting next player");
         while self.p.iter().any(|p| p.seat == next && (p.is_folded || p.is_all_in)) {
             next = next % num_p + 1;
         }
-        println!("got next player");
 
         if next == curr_seat && !(
             self.done_s_bets.len() == 2 && self.stage == Stages::PreFlop 
