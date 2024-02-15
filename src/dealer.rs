@@ -264,6 +264,7 @@ impl Dealer {
     // should take in self and an action struct
 
     pub fn p_action(&mut self, action: Action) {
+        println!("p action {:?}", action);
         // not all rules are checked, im lazy and it runs faster without it
         // makes it hard to catch errors
         // @TODO should check for errors by parsing ActionHistory to see if rules are broken 
@@ -544,6 +545,7 @@ impl Dealer {
 
             }
         }
+        
         self.update_stage();
     }
     // function to decide if the stage has ended and to update stage and curr accordingly
@@ -562,7 +564,8 @@ impl Dealer {
     pub fn update_stage(&mut self) {
         let s_bets_len = self.s_bets.len();
         let ap_count = self.p.iter().filter(|p| !p.is_folded && !p.is_all_in).count();
-
+        println!("update stage {:?} {:?}", self.stage, self.s_bets);
+        println!("ap count {:?}", ap_count);
         if s_bets_len == 0 {
             if self.stage == Stages::PreFlop {
                 // deal 3 cards to the flop
@@ -605,7 +608,7 @@ impl Dealer {
                     return;
                 } else {
                     let flop_actions: &[Action] = &self.ah.actions[self.ah.f[0]..];
-                    // println!("flop actions {:?}", self.ah);
+                    println!("flop actions {:?}", self.ah);
                     let is_latest_action_check = flop_actions.iter().last().unwrap().t == ActionType::Check;
                     // println!("is latest action check {:?}", is_latest_action_check);
                     if is_latest_action_check {
@@ -623,7 +626,8 @@ impl Dealer {
                             self.next_player();
                         }
                     } else {
-                        self.next_player();
+                        self.stage = Stages::Showdown;
+                        return;
                     }
                 }
   
@@ -1521,6 +1525,65 @@ mod tests {
         dealer.p_action(Action {
             seat: 2,
             t: ActionType::Fold,
+            value: 0
+        });
+        assert_eq!(dealer.stage, Stages::Showdown);
+        dealer.handle_showdown();
+        // println!("phands {:?}", dealer.p.iter().map(|p| p.hand).collect::<Vec<[Card; 4]>>());
+
+    }
+
+    #[test]
+    fn test_diff_chips2() {
+        let mut dealer = Dealer::new(123, vec![
+            Player::new(1, 5),
+            Player::new(2, 10),
+            Player::new(3, 15),
+        ]);
+
+        dealer.new_hand();
+        dealer.p_action(Action {
+            seat: 1,
+            t: ActionType::Call,
+            value: 0
+        });
+        assert_eq!(dealer.curr, 2);
+        dealer.p_action(Action {
+            seat: 2,
+            t: ActionType::Call,
+            value: 0
+        });
+        assert_eq!(dealer.stage, Stages::PreFlop);
+        dealer.p_action(Action {
+            seat: 3,
+            t: ActionType::Check,
+            value: 0
+        });
+        assert_eq!(dealer.stage, Stages::Flop);
+        assert_eq!(dealer.curr, 2);
+        dealer.p_action(Action {
+            seat: 2,
+            t: ActionType::Check,
+            value: 0
+        }); 
+        dealer.p_action(Action {
+            seat: 3,
+            t: ActionType::Check,
+            value: 0
+        }); 
+        dealer.p_action(Action {
+            seat: 1,
+            t: ActionType::BetAI,
+            value: 3
+        });
+        dealer.p_action(Action {
+            seat: 2,
+            t: ActionType::Call,
+            value: 0
+        });
+        dealer.p_action(Action {
+            seat: 3,
+            t: ActionType::Call,
             value: 0
         });
         assert_eq!(dealer.stage, Stages::Showdown);
