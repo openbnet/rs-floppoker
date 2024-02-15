@@ -604,14 +604,19 @@ impl Dealer {
                     self.stage = Stages::Showdown;
                     return;
                 } else {
-                    let flop_actions: &[Action] = &self.ah.actions[self.ah.pf.len()..self.ah.actions.len()];
+                    let flop_actions: &[Action] = &self.ah.actions[self.ah.f[0]..];
                     // println!("flop actions {:?}", self.ah);
                     let is_latest_action_check = flop_actions.iter().last().unwrap().t == ActionType::Check;
-                    println!("is latest action check {:?}", is_latest_action_check);
+                    // println!("is latest action check {:?}", is_latest_action_check);
                     if is_latest_action_check {
                         // check if all players have checked
                         let num_checks = flop_actions.iter().filter(|a| a.t == ActionType::Check).count();
-                        println!("num checks {:?} ap {:?}", num_checks, ap_count);
+                        // println!("num checks {:?} ap {:?}", num_checks, ap_count);
+                        if num_checks > ap_count {
+                            eprintln!("flop actions {:?}", flop_actions);
+                            eprintln!("ah {:#?}", self.ah);
+                            panic!("too many checks");
+                        }
                         if num_checks == ap_count {
                             self.stage = Stages::Showdown;
                         } else {
