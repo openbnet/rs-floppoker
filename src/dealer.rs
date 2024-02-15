@@ -1467,4 +1467,58 @@ mod tests {
 
 
     }
+    #[test]
+    fn test_diff_chips() {
+        let mut dealer = Dealer::new(123, vec![
+            Player::new(1, 20),
+            Player::new(2, 10),
+            Player::new(3, 5),
+        ]);
+
+        dealer.new_hand();
+        dealer.p_action(Action {
+            seat: 1,
+            t: ActionType::Call,
+            value: 0
+        });
+        assert_eq!(dealer.curr, 2);
+        dealer.p_action(Action {
+            seat: 2,
+            t: ActionType::Call,
+            value: 0
+        });
+        assert_eq!(dealer.stage, Stages::PreFlop);
+        dealer.p_action(Action {
+            seat: 3,
+            t: ActionType::Check,
+            value: 0
+        });
+        assert_eq!(dealer.stage, Stages::Flop);
+        assert_eq!(dealer.curr, 2);
+        dealer.p_action(Action {
+            seat: 2,
+            t: ActionType::Check,
+            value: 0
+        }); 
+        dealer.p_action(Action {
+            seat: 3,
+            t: ActionType::BetAI,
+            value: 3
+        }); 
+        dealer.p_action(Action {
+            seat: 1,
+            t: ActionType::Raise,
+            value: 12
+        });
+        dealer.p_action(Action {
+            seat: 2,
+            t: ActionType::CallAI,
+            value: 0
+        });
+        assert_eq!(dealer.stage, Stages::Showdown);
+        dealer.handle_showdown();
+        println!("phands {:?}", dealer.p.iter().map(|p| p.hand).collect::<Vec<[Card; 4]>>());
+
+    }
+
 }
