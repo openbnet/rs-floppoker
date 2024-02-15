@@ -264,7 +264,7 @@ impl Dealer {
     // should take in self and an action struct
 
     pub fn p_action(&mut self, action: Action) {
-        println!("p action {:?}", action);
+        // println!("p action {:?}", action);
         // not all rules are checked, im lazy and it runs faster without it
         // makes it hard to catch errors
         // @TODO should check for errors by parsing ActionHistory to see if rules are broken 
@@ -608,7 +608,7 @@ impl Dealer {
                     return;
                 } else {
                     let flop_actions: &[Action] = &self.ah.actions[self.ah.f[0]..];
-                    println!("flop actions {:?}", self.ah);
+                    // println!("flop actions {:?}", self.ah);
                     let is_latest_action_check = flop_actions.iter().last().unwrap().t == ActionType::Check;
                     // println!("is latest action check {:?}", is_latest_action_check);
                     if is_latest_action_check {
