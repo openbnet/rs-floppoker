@@ -254,7 +254,7 @@ impl Dealer {
     pub fn pay_from_pot(&mut self, seat: &u8, amt: &u16) {
         self.add_chips_to_player(seat, amt);
         if self.pot < *amt {
-            // println!("Pot {:?} amt {:?}", self.pot, amt);
+            eprintln!("Pot {:?} amt {:?}", self.pot, amt);
             // println!("ah {:?}", self.ah);
             panic!("Not enough chips in pot");
         }
@@ -600,7 +600,7 @@ impl Dealer {
 
             } else {
                 // println!("flop s_bets {:?} all_s_bets {:?}", self.s_bets, self.done_s_bets);
-                if ap_count == 1 {
+                if ap_count <= 1 {
                     self.stage = Stages::Showdown;
                     return;
                 } else {
@@ -617,7 +617,7 @@ impl Dealer {
                             self.next_player();
                         }
                     } else {
-                        self.stage = Stages::Showdown;
+                        self.next_player();
                     }
                 }
   
@@ -637,10 +637,11 @@ impl Dealer {
         let curr_seat = self.curr;
         let num_p = self.p.len() as u8;
         let mut next = curr_seat % num_p + 1;
-
+        println!("getting next player");
         while self.p.iter().any(|p| p.seat == next && (p.is_folded || p.is_all_in)) {
             next = next % num_p + 1;
         }
+        println!("got next player");
 
         if next == curr_seat && !(
             self.done_s_bets.len() == 2 && self.stage == Stages::PreFlop 
@@ -690,14 +691,15 @@ impl Dealer {
                 let a_value = self.ah.actions[action.a as usize].value;
                 // println!("paying seat {:?} action {:?} a_value {:?} i_chips {:?}", seat, action, a_value, i_chips);
                 if i_chips < a_value {
-                    // not enough chips to pay
-                    action.pp.push(PartialPaid {
-                        seat: *seat,
-                        amt: i_chips
-                    });
+                    if i_chips != 0 {
+                        action.pp.push(PartialPaid {
+                            seat: *seat,
+                            amt: i_chips
+                        });
+                        i_chips = 0;
+                        total += i_chips;
+                    }
                     action.unpaid.retain(|x| x != seat);
-                    total += i_chips;
-                    break;
                 } else {
                     total += a_value;
                     i_chips -= a_value;
@@ -782,7 +784,8 @@ impl Dealer {
                     let sidepot_total = sidepot.value * sidepot.contributors.len() as u16;
                     let chips = (*equity as f32 / 100 as f32 * sidepot_total as f32).floor() as u16;
                     // println!("pot {:?} sidepot_total {:?} equity {:?} chips {:?}", self.pot, sidepot_total, equity, chips);
-                    self.pay_from_pot(&showdown_players_seats[i], &chips);
+                    let min = std::cmp::min(chips, self.pot);
+                    self.pay_from_pot(&showdown_players_seats[i], &min);
                 }
             }
 
@@ -1470,9 +1473,9 @@ mod tests {
     #[test]
     fn test_diff_chips() {
         let mut dealer = Dealer::new(123, vec![
-            Player::new(1, 20),
+            Player::new(1, 5),
             Player::new(2, 10),
-            Player::new(3, 5),
+            Player::new(3, 15),
         ]);
 
         dealer.new_hand();
@@ -1497,27 +1500,28 @@ mod tests {
         assert_eq!(dealer.curr, 2);
         dealer.p_action(Action {
             seat: 2,
-            t: ActionType::Check,
-            value: 0
+            t: ActionType::Bet,
+            value: 6
         }); 
         dealer.p_action(Action {
             seat: 3,
-            t: ActionType::BetAI,
-            value: 3
+            t: ActionType::RaiseAI,
+            value: 7
         }); 
         dealer.p_action(Action {
             seat: 1,
-            t: ActionType::Raise,
-            value: 12
+            t: ActionType::CallAI,
+            value: 0
         });
+        // println!("before doing fold {:#?}", dealer);
         dealer.p_action(Action {
             seat: 2,
-            t: ActionType::CallAI,
+            t: ActionType::Fold,
             value: 0
         });
         assert_eq!(dealer.stage, Stages::Showdown);
         dealer.handle_showdown();
-        println!("phands {:?}", dealer.p.iter().map(|p| p.hand).collect::<Vec<[Card; 4]>>());
+        // println!("phands {:?}", dealer.p.iter().map(|p| p.hand).collect::<Vec<[Card; 4]>>());
 
     }
 
