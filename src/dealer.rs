@@ -786,14 +786,14 @@ impl Dealer {
         }
         // we need to clone ah and replace it, below mutates ah.actions which sux for re-running hands
         let tmp_actions = self.ah.actions.clone();
-        println!("handle showdown done s bets {:?}", self.done_s_bets);
+        // println!("handle showdown done s bets {:?}", self.done_s_bets);
         self.refund_excess();
-        println!("after refund done s bets {:?}", self.done_s_bets);
+        // println!("after refund done s bets {:?}", self.done_s_bets);
         // println!("ah {:?}", self.ah);
-        println!("after refund players {:?}", self.p);
+        // println!("after refund players {:?}", self.p);
         let showdown_players_seats: Vec<u8> = self.p.iter().filter(|p| !p.is_folded).map(|p| p.seat).collect::<Vec<u8>>();
         let pot = self.pot.clone();
-        println!("showdown_players_seats {:?}", showdown_players_seats);
+        // println!("showdown_players_seats {:?}", showdown_players_seats);
         if showdown_players_seats.len() == 0 {
             // println!("ah {:?}", self.ah);
             panic!("showdown No players left");
@@ -807,13 +807,13 @@ impl Dealer {
                 panic!("Flop not dealt");
             }
             let showdown_player_hands: Vec<[Card; 4]> = self.p.iter().filter(|p| !p.is_folded).map(|p| p.hand).collect::<Vec<[Card; 4]>>();
-            println!("showdown player hands {:?}", showdown_player_hands);
-            println!("showdown pseats {:?}", showdown_players_seats);
+            // println!("showdown player hands {:?}", showdown_player_hands);
+            // println!("showdown pseats {:?}", showdown_players_seats);
             let equities = normalize_equity(&equity(&showdown_player_hands, &self.flop));
-            println!("equities {:?}", equities);
+            // println!("equities {:?}", equities);
             
             let sidepots = self.group_side_pots();
-            println!("sidepots {:?}", sidepots);
+            // println!("sidepots {:?}", sidepots);
             for sidepot in sidepots {
                 for (i, equity) in equities.iter().enumerate() {
                     let sidepot_total = sidepot.value * sidepot.contributors.len() as u16;
@@ -833,7 +833,7 @@ impl Dealer {
                 self.pay_from_pot(&showdown_players_seats[0], &self.pot.clone());
             }
         }
-        println!("got to end of showdown");
+        // println!("got to end of showdown");
         self.ah.actions = tmp_actions;
     }
 
@@ -861,17 +861,17 @@ impl Dealer {
             // we dont care about the unpaid field at this point
         // then we need merge all the bets that have the same sorted paid vec
 
-        println!("group sidepots called {:#?}", &self.done_s_bets);
+        // println!("group sidepots called {:#?}", &self.done_s_bets);
         for bet in &self.done_s_bets {
             if bet.pp.len() != 0 {
                 // Partially paid bets
                 let mut ppbet = bet.clone();
                 let mut ppbet_value = self.ah.actions[ppbet.a].value;
-                println!("inital ppbet {:?} ppbet_value {:?}", ppbet, ppbet_value);
+                // println!("inital ppbet {:?} ppbet_value {:?}", ppbet, ppbet_value);
                 while ppbet.pp.len() != 0 {
                    
                     let smallest_value = ppbet.pp.iter().min_by(|a, b| a.amt.cmp(&b.amt)).unwrap().amt;
-                    println!("found pp {:?} smallest value {:?}", ppbet, smallest_value);
+                    // println!("found pp {:?} smallest value {:?}", ppbet, smallest_value);
                     let mut new_paid: Vec<u8> = bet.paid.clone();
                     new_paid.extend(bet.pp.iter().map(|pp| pp.seat));
                     new_paid.sort();
@@ -883,7 +883,7 @@ impl Dealer {
                         seat: pp.seat,
                         amt: pp.amt - smallest_value
                     }).filter(|pp| pp.amt != 0).collect::<Vec<PartialPaid>>();
-                    println!("done pp {:?} smallest value {:?}", ppbet, smallest_value);
+                    // println!("done pp {:?} smallest value {:?}", ppbet, smallest_value);
                     ppbet_value -= smallest_value;
                 }
                 // println!("ppbet {:?} ppbet_value {:?}", ppbet, ppbet_value);
@@ -905,7 +905,7 @@ impl Dealer {
 
  
         }
-        println!("side pots {:?}", side_pots);
+        // println!("side pots {:?}", side_pots);
         side_pots.values().cloned().collect()
     }
 
