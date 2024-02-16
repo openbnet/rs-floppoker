@@ -867,11 +867,11 @@ impl Dealer {
                 // Partially paid bets
                 let mut ppbet = bet.clone();
                 let mut ppbet_value = self.ah.actions[ppbet.a].value;
-                // println!("inital ppbet {:?} ppbet_value {:?}", ppbet, ppbet_value);
+                println!("inital ppbet {:?} ppbet_value {:?}", ppbet, ppbet_value);
                 while ppbet.pp.len() != 0 {
                    
-                    let smallest_value = bet.pp.iter().min_by(|a, b| a.amt.cmp(&b.amt)).unwrap().amt;
-                    // println!("found pp {:?} smallest value {:?}", bet, smallest_value);
+                    let smallest_value = ppbet.pp.iter().min_by(|a, b| a.amt.cmp(&b.amt)).unwrap().amt;
+                    println!("found pp {:?} smallest value {:?}", ppbet, smallest_value);
                     let mut new_paid: Vec<u8> = bet.paid.clone();
                     new_paid.extend(bet.pp.iter().map(|pp| pp.seat));
                     new_paid.sort();
@@ -883,6 +883,7 @@ impl Dealer {
                         seat: pp.seat,
                         amt: pp.amt - smallest_value
                     }).filter(|pp| pp.amt != 0).collect::<Vec<PartialPaid>>();
+                    println!("done pp {:?} smallest value {:?}", ppbet, smallest_value);
                     ppbet_value -= smallest_value;
                 }
                 // println!("ppbet {:?} ppbet_value {:?}", ppbet, ppbet_value);
@@ -1671,6 +1672,86 @@ mod tests {
         println!("got here!!!!!");
         let aa = dealer.get_available_actions(); 
         println!("aa {:#?}", aa);
+        assert_eq!(dealer.stage, Stages::Showdown);
+        dealer.handle_showdown();
+        // println!("phands {:?}", dealer.p.iter().map(|p| p.hand).collect::<Vec<[Card; 4]>>());
+
+    }
+
+    #[test]
+    fn test_2pp() {
+        let mut dealer = Dealer::new(123, vec![
+            Player::new(1, 100),
+            Player::new(2, 10),
+            Player::new(3, 15),
+            Player::new(4, 100),
+        ]);
+
+        dealer.new_hand();
+        dealer.p_action(Action {
+            seat: 4,
+            t: ActionType::Call,
+            value: 0
+        });
+        dealer.p_action(Action {
+            seat: 1,
+            t: ActionType::Raise,
+            value: 5
+        });
+        assert_eq!(dealer.curr, 2);
+        dealer.p_action(Action {
+            seat: 2,
+            t: ActionType::Call,
+            value: 0
+        });
+        assert_eq!(dealer.stage, Stages::PreFlop);
+        dealer.p_action(Action {
+            seat: 3,
+            t: ActionType::Call,
+            value: 0
+        });
+        dealer.p_action(Action {
+            seat: 4,
+            t: ActionType::Call,
+            value: 0
+        });
+        assert_eq!(dealer.stage, Stages::Flop);
+        dealer.p_action(Action {
+            seat: 2,
+            t: ActionType::Check,
+            value: 0
+        }); 
+        dealer.p_action(Action {
+            seat: 3,
+            t: ActionType::Check,
+            value: 0
+        });
+        dealer.p_action(Action {
+            seat: 4,
+            t: ActionType::Check,
+            value: 0
+        });
+        dealer.p_action(Action {
+            seat: 1,
+            t: ActionType::Bet,
+            value: 28
+        });
+        dealer.p_action(Action {
+            seat: 2,
+            t: ActionType::CallAI,
+            value: 0
+        });
+        dealer.p_action(Action {
+            seat: 3,
+            t: ActionType::CallAI,
+            value: 0
+        });
+        dealer.p_action(Action {
+            seat: 4,
+            t: ActionType::Call,
+            value: 0
+        });
+       
         assert_eq!(dealer.stage, Stages::Showdown);
         dealer.handle_showdown();
         // println!("phands {:?}", dealer.p.iter().map(|p| p.hand).collect::<Vec<[Card; 4]>>());
