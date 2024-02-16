@@ -786,9 +786,9 @@ impl Dealer {
         }
         // we need to clone ah and replace it, below mutates ah.actions which sux for re-running hands
         let tmp_actions = self.ah.actions.clone();
-        // println!("handle showdown done s bets {:?}", self.done_s_bets);
+        println!("handle showdown done s bets {:?}", self.done_s_bets);
         self.refund_excess();
-        // println!("after refund done s bets {:?}", self.done_s_bets);
+        println!("after refund done s bets {:?}", self.done_s_bets);
         // println!("ah {:?}", self.ah);
         // println!("after refund actions {:?}", self.ah.actions);
         let showdown_players_seats: Vec<u8> = self.p.iter().filter(|p| !p.is_folded).map(|p| p.seat).collect::<Vec<u8>>();
@@ -833,7 +833,7 @@ impl Dealer {
                 self.pay_from_pot(&showdown_players_seats[0], &self.pot.clone());
             }
         }
-
+        println!("got to end of showdown");
         self.ah.actions = tmp_actions;
     }
 
@@ -1613,6 +1613,64 @@ mod tests {
             t: ActionType::Call,
             value: 0
         });
+        assert_eq!(dealer.stage, Stages::Showdown);
+        dealer.handle_showdown();
+        // println!("phands {:?}", dealer.p.iter().map(|p| p.hand).collect::<Vec<[Card; 4]>>());
+
+    }
+
+    #[test]
+    fn test_diff_chips3() {
+        let mut dealer = Dealer::new(123, vec![
+            Player::new(1, 42),
+            Player::new(2, 34),
+            Player::new(3, 61),
+        ]);
+
+        dealer.new_hand();
+        dealer.p_action(Action {
+            seat: 1,
+            t: ActionType::Call,
+            value: 0
+        });
+        assert_eq!(dealer.curr, 2);
+        dealer.p_action(Action {
+            seat: 2,
+            t: ActionType::Fold,
+            value: 0
+        });
+        assert_eq!(dealer.stage, Stages::PreFlop);
+        dealer.p_action(Action {
+            seat: 3,
+            t: ActionType::Check,
+            value: 0
+        });
+        assert_eq!(dealer.stage, Stages::Flop);
+        dealer.p_action(Action {
+            seat: 3,
+            t: ActionType::Check,
+            value: 0
+        }); 
+        dealer.p_action(Action {
+            seat: 1,
+            t: ActionType::Bet,
+            value: 3
+        });
+        dealer.p_action(Action {
+            seat: 3,
+            t: ActionType::Raise,
+            value: 7
+        });
+        let seat3chips = dealer.p.iter().find(|p| p.seat == 3).unwrap().chips;
+        assert_eq!(seat3chips, 49);
+        dealer.p_action(Action {
+            seat: 1,
+            t: ActionType::Raise,
+            value: 16
+        });
+        println!("got here!!!!!");
+        let aa = dealer.get_available_actions(); 
+        println!("aa {:#?}", aa);
         assert_eq!(dealer.stage, Stages::Showdown);
         dealer.handle_showdown();
         // println!("phands {:?}", dealer.p.iter().map(|p| p.hand).collect::<Vec<[Card; 4]>>());
