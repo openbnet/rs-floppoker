@@ -861,7 +861,7 @@ impl Dealer {
             // we dont care about the unpaid field at this point
         // then we need merge all the bets that have the same sorted paid vec
 
-        println!("group sidepots called");
+        println!("group sidepots called {:#?}", &self.done_s_bets);
         for bet in &self.done_s_bets {
             if bet.pp.len() != 0 {
                 // Partially paid bets
