@@ -525,12 +525,13 @@ impl Dealer {
             ActionType::RaiseAI => {
                 if &action.value + call_amt != p_chips {
                     eprintln!("debug {:#?}", self);
-                    eprintln!("action {:#?}", action);
+                    eprintln!("action {:#?} call_amt {:?}", action, call_amt);
                     panic!("raiseai incorrect chips");
                 }
                 if &action.value > &(call_amt + self.pot) {
                                         eprintln!("debug {:#?}", self);
                     eprintln!("action {:#?}", action);
+                    
                     panic!("raiseAI too much");
                 }
                 // println!("raise called {:?} {:?}", call_amt, action);
