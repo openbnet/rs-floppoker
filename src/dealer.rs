@@ -279,11 +279,13 @@ impl Dealer {
         match action.t {
             ActionType::Call => {
                 if call_amt > p_chips {
-                    eprintln!("debug {:#?}", self);
+                                        eprintln!("debug {:#?}", self);
+                    eprintln!("action {:#?}", action);
                     panic!("Not enough chips");
                 }
                 if action.value != 0 {
-                    eprintln!("debug {:#?}", self);
+                                        eprintln!("debug {:#?}", self);
+                    eprintln!("action {:#?}", action);
                     panic!("Call action should not have value");
                 }
                 // pay off outstanding bets
@@ -291,7 +293,8 @@ impl Dealer {
                     self.pay_all_outstanding_bets(&action.seat, &p_chips);
                     self.clean_s_bets();
                 } else {
-                    eprintln!("debug {:#?}", self);
+                                        eprintln!("debug {:#?}", self);
+                    eprintln!("action {:#?}", action);
                     panic!("Call No outstanding bets to call");
                 }
 
@@ -313,11 +316,13 @@ impl Dealer {
                 // there may be bets that the callAI amt is not enough to cover
                 // it needs to go into the partial paid vec then
                 if action.value != 0 {
-                    eprintln!("debug {:#?}", self);
+                                        eprintln!("debug {:#?}", self);
+                    eprintln!("action {:#?}", action);
                     panic!("CallAI action should not have value");
                 }
                 if call_amt < p_chips {
-                    eprintln!("debug {:#?}", self);
+                                        eprintln!("debug {:#?}", self);
+                    eprintln!("action {:#?}", action);
                     panic!("cant callAI too many chips");
                 }
                 // pay off outstanding bets
@@ -328,7 +333,8 @@ impl Dealer {
                 } else {
                     // println!("gona painc callAmt is 0 {:?} {:?} {:?}", self.stage, action, self.ah);
                     // println!("s_bets {:?} done_s_bets {:?}", self.s_bets, self.done_s_bets);
-                    eprintln!("debug {:#?}", self);
+                                        eprintln!("debug {:#?}", self);
+                    eprintln!("action {:#?}", action);
                     panic!("call AI No outstanding bets to call");
                 }
                 let player = self.p.iter_mut().find(|p| p.seat == action.seat).unwrap();
@@ -396,12 +402,14 @@ impl Dealer {
             },
             ActionType::Bet => {
                 if &action.value + call_amt > p_chips {
-                    eprintln!("debug {:#?}", self);
+                                        eprintln!("debug {:#?}", self);
+                    eprintln!("action {:#?}", action);
                     panic!("Not enough chips");
                 }
                 // pay off outstanding bets
                 if call_amt > 0 {
-                    eprintln!("debug {:#?}", self);
+                                        eprintln!("debug {:#?}", self);
+                    eprintln!("action {:#?}", action);
                     panic!("Bet should not have outstanding bets");
                 } 
                 // pay the bet
@@ -436,7 +444,8 @@ impl Dealer {
                 }
                 // pay off outstanding bets
                 if call_amt > 0 {
-                    eprintln!("debug {:#?}", self);
+                                        eprintln!("debug {:#?}", self);
+                    eprintln!("action {:#?}", action);
                     panic!("Bet should not have outstanding bets");
                 } 
                 // pay the bet
@@ -471,11 +480,13 @@ impl Dealer {
                 if &action.value + call_amt > p_chips {
                     // println!("raise called {:?} {:?}", call_amt, action);
                     // println!("pchips {:?} pot {:?}", p_chips, self.pot);
-                    eprintln!("debug {:#?}", self);
+                                        eprintln!("debug {:#?}", self);
+                    eprintln!("action {:#?}", action);
                     panic!("raise Not enough chips");
                 }
                 if &action.value > &(call_amt + self.pot) {
-                    eprintln!("debug {:#?}", self);
+                                        eprintln!("debug {:#?}", self);
+                    eprintln!("action {:#?}", action);
                     panic!("raise too much");
                 }
                 // println!("raise called {:?} {:?}", call_amt, action);
@@ -514,10 +525,12 @@ impl Dealer {
             ActionType::RaiseAI => {
                 if &action.value + call_amt != p_chips {
                     eprintln!("debug {:#?}", self);
-                    panic!("raise incorrect chips");
+                    eprintln!("action {:#?}", action);
+                    panic!("raiseai incorrect chips");
                 }
                 if &action.value > &(call_amt + self.pot) {
-                    eprintln!("debug {:#?}", self);
+                                        eprintln!("debug {:#?}", self);
+                    eprintln!("action {:#?}", action);
                     panic!("raiseAI too much");
                 }
                 // println!("raise called {:?} {:?}", call_amt, action);
