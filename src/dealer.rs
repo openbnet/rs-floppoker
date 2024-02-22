@@ -654,7 +654,6 @@ impl Dealer {
                         }
                     } else {
                         self.stage = Stages::Showdown;
-                        return;
                     }
                 }
   
