@@ -116,7 +116,7 @@ impl Dealer {
             p,
             deck: Deck::new(seed),
             stage: Stages::Showdown,
-            seed: seed,
+            seed,
             button,
             pot: 0,
             curr: 0,
@@ -176,8 +176,8 @@ impl Dealer {
         self.done_s_bets = vec![];
         // update action history starting bal
         self.ah.start_bal = self.p.iter().map(|p| StartingBal {
-            seat: p.seat.clone(),
-            bal: p.chips.clone()
+            seat: p.seat,
+            bal: p.chips
         }).collect::<Vec<StartingBal>>();
 
         // first player to post small blind by p_action bet 1
@@ -203,21 +203,18 @@ impl Dealer {
                 t: ActionType::Raise,
                 value: 1
             });
+        } else if self.ah.start_bal[1].bal == 1 {
+            self.p_action(Action {
+                seat: self.ah.start_bal[1].seat,
+                t: ActionType::CallAI,
+                value: 0
+            });
         } else {
-            if self.ah.start_bal[1].bal == 1 {
-                self.p_action(Action {
-                    seat: self.ah.start_bal[1].seat,
-                    t: ActionType::CallAI,
-                    value: 0
-                });
-            } else {
-                self.p_action(Action {
-                    seat: self.ah.start_bal[1].seat,
-                    t: ActionType::RaiseAI,
-                    value: 1
-                });
-            }
-
+            self.p_action(Action {
+                seat: self.ah.start_bal[1].seat,
+                t: ActionType::RaiseAI,
+                value: 1
+            });
         }
 
 
@@ -606,11 +603,10 @@ impl Dealer {
 
                 if !is_last_action_bb_check && self.done_s_bets.len() == 2 && ap_count > 1 {
                     // the last bet was the bb
-                    self.next_player(); 
-                    return;
+                    self.next_player();
                 } else {
                     // println!("gona deal flop");
-                    if self.s_bets.len() != 0 {
+                    if !self.s_bets.is_empty() {
                         panic!("s_bets should be empty");
                     }
                     self.deal_flop();
@@ -618,12 +614,10 @@ impl Dealer {
                     // println!("dealt flop {:?}", ap_count);
                     if ap_count <= 1 {
                         self.stage = Stages::Showdown;
-                        return;
                     } else {
                         self.stage = Stages::Flop;
                         self.curr = self.button;
                         self.next_player();
-                        return;
                     }
 
                 }
@@ -632,7 +626,6 @@ impl Dealer {
                 // println!("flop s_bets {:?} all_s_bets {:?}", self.s_bets, self.done_s_bets);
                 if ap_count <= 1 {
                     self.stage = Stages::Showdown;
-                    return;
                 } else {
                     let flop_actions: &[Action] = &self.ah.actions[self.ah.f[0]..];
                     // println!("flop actions {:?}", self.ah);
@@ -698,7 +691,7 @@ impl Dealer {
        let mut total: u16 = 0;
          for action in &self.s_bets {
               if action.unpaid.contains(seat) {
-                total += self.ah.actions[action.a as usize].value;
+                total += self.ah.actions[action.a].value;
               }
          }
          total
@@ -717,12 +710,12 @@ impl Dealer {
         // user should be removed from unpaid, and NOT put into paid
 
         let mut total: u16 = 0;
-        let mut i_chips = pchips.clone();
+        let mut i_chips = *pchips;
         // println!("pay outstanding s_bets {:?} {:?}", seat, self.s_bets);
         for action in &mut self.s_bets {
             if action.unpaid.contains(seat) {
 
-                let a_value = self.ah.actions[action.a as usize].value;
+                let a_value = self.ah.actions[action.a].value;
                 // println!("paying seat {:?} action {:?} a_value {:?} i_chips {:?}", seat, action, a_value, i_chips);
                 if i_chips < a_value {
                     if i_chips != 0 {
@@ -754,7 +747,7 @@ impl Dealer {
     pub fn clean_s_bets(&mut self) {
         let mut must_clean_index: Vec<usize> = vec![];
         for (i, action) in self.s_bets.iter().enumerate() {
-            if action.unpaid.len() == 0 {
+            if action.unpaid.is_empty() {
                 must_clean_index.push(i);
             }
         }
@@ -791,9 +784,9 @@ impl Dealer {
         // println!("ah {:?}", self.ah);
         // println!("after refund players {:?}", self.p);
         let showdown_players_seats: Vec<u8> = self.p.iter().filter(|p| !p.is_folded).map(|p| p.seat).collect::<Vec<u8>>();
-        let pot = self.pot.clone();
+        let pot = self.pot;
         // println!("showdown_players_seats {:?}", showdown_players_seats);
-        if showdown_players_seats.len() == 0 {
+        if showdown_players_seats.is_empty() {
             // println!("ah {:?}", self.ah);
             panic!("showdown No players left");
         } else if showdown_players_seats.len() == 1 {
@@ -816,7 +809,7 @@ impl Dealer {
             for sidepot in sidepots {
                 for (i, equity) in equities.iter().enumerate() {
                     let sidepot_total = sidepot.value * sidepot.contributors.len() as u16;
-                    let chips = (*equity as f32 / 100 as f32 * sidepot_total as f32).floor() as u16;
+                    let chips = (*equity as f32 / 100_f32 * sidepot_total as f32).floor() as u16;
                     // println!("pot {:?} sidepot_total {:?} equity {:?} chips {:?}", self.pot, sidepot_total, equity, chips);
                     let min = std::cmp::min(chips, self.pot);
                     self.pay_from_pot(&showdown_players_seats[i], &min);
@@ -862,12 +855,12 @@ impl Dealer {
 
         // println!("group sidepots called {:#?}", &self.done_s_bets);
         for bet in &self.done_s_bets {
-            if bet.pp.len() != 0 {
+            if !bet.pp.is_empty() {
                 // Partially paid bets
                 let mut ppbet = bet.clone();
                 let mut ppbet_value = self.ah.actions[ppbet.a].value;
                 // println!("inital ppbet {:?} ppbet_value {:?}", ppbet, ppbet_value);
-                while ppbet.pp.len() != 0 {
+                while !ppbet.pp.is_empty() {
                    
                     let smallest_value = ppbet.pp.iter().min_by(|a, b| a.amt.cmp(&b.amt)).unwrap().amt;
                     // println!("found pp {:?} smallest value {:?}", ppbet, smallest_value);
@@ -970,7 +963,7 @@ impl Dealer {
         let mut available_actions: Vec<ActionType> = vec![];
         let call_amt = self.get_call_amt(&self.curr);
         let p_chips = self.p.iter().find(|p| p.seat == self.curr).unwrap().chips;
-        if self.s_bets.len() == 0 {
+        if self.s_bets.is_empty() {
             // always check or bet, if can bet all in, always bet all in
             available_actions.push(ActionType::Check);
             if p_chips <= self.pot {
@@ -1007,7 +1000,7 @@ impl Dealer {
                 
                     ) {
 
-                        let at = &self.ah.actions[sb.a as usize].t;
+                        let at = &self.ah.actions[sb.a].t;
                         if *at == ActionType::Raise || *at == ActionType::RaiseAI {
                             num_raises += 1;
                         }
@@ -1018,14 +1011,11 @@ impl Dealer {
                             available_actions.push(ActionType::RaiseAI);
                         }
                        // we ignore for num_raises > max_raise and too many chips to raiseAI
+                    } else if p_chips < call_amt + self.pot {
+                        available_actions.push(ActionType::RaiseAI);
                     } else {
-                        if p_chips < call_amt + self.pot {
-                            available_actions.push(ActionType::RaiseAI);
-                        } else {
-                            // cant raise if you can raiseAI
-                            available_actions.push(ActionType::Raise);
-                        }
-                        
+                        // cant raise if you can raiseAI
+                        available_actions.push(ActionType::Raise);
                     }
                     
 
